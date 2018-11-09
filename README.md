@@ -1,6 +1,6 @@
 # Our tomoDD
 ## 简介
-  本程序大部分将使用**Fortran90**编写。
+  本程序大部分将使用**Fortran90**、**C**编写。
 ## tomoDD@H,J Zhang 文件说明
 ------
 ### aprod.f
@@ -152,3 +152,4 @@
 ### vmodel.f
 
 ### weighting_tomoDD.f
+
