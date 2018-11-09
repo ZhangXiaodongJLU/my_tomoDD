@@ -6,16 +6,16 @@
   本程序大部分将使用**Fortran90**编写。
 ## tomoDD@H,J Zhang 文件说明
 ------
-### aprod.f
+### aprod.f(已更新为F90)
 #### 版本 hypoDD,Zhang修改
 #### 类型 subroutine aprod(mode, m, n, x, y, leniw, lenrw, iw, rw)
 #### 程序说明
-本子函数用于计算矩阵a与列向量x、y的乘积，据称用于**LSQR**算法。
+本子程序用于计算矩阵a与列向量x、y的乘积，据称用于**LSQR**算法。
 #### 变量说明
 	变量名  变量类型                         变量说明
 	1.mode  INTEGER                   选择计算模式
                                 1      计算y=y+a*x，不改变x
-                                2      计算x=x+a（转置）*y，不改变y
+                                2      计算x=x+a(转置)*y，不改变y
 	2.m     INTEGER                   a矩阵行数  
 	3.n     INTEGER                   a矩阵列数
 	4.x     REAL,DIMENSION(n)         x列向量
@@ -42,11 +42,11 @@
 
 ### datetime_.c
 
-### datum.f
+### datum.f(已更新为F90)
 #### 版本 Zhang版本
 #### 类型 subroutine datum(itf, iyr, imo, idy, ihr, imn)
 #### 程序说明
-本子函数用于输入相对事件参考年的分钟数转化为绝对日期，事件参考年由输入参数决定。
+本子程序用于输入相对事件参考年的分钟数转化为绝对事件(精确到分)，事件参考年由输入参数决定。
 #### 变量说明
 	变量名  变量类型                         变量说明
 	1.itf     INTEGER                   输入参量，事件相对分钟数
@@ -89,7 +89,25 @@
 
 ### indexxi.f
 
-### juliam.f
+### juliam.f(已更新为F90)
+#### 版本 Zhang版本
+#### 类型 integer function juliam(iyr, imo, idy, ihr, imn)
+#### 程序说明
+本子程序用于输入事件绝对事件(精确到分)转化为事件相对分钟数。
+#### 变量说明
+	变量名  变量类型                         变量说明
+	1.iyr     INTEGER                   输入参量，事件参考年  
+	2.imo     INTEGER                   输入参量，事件绝对年
+	3.idy     INTEGER                   输入参量，事件绝对月
+	4.ihr     INTEGER                   输入参量，事件绝对时
+	5.imn     INTEGER                   输入参量，事件绝对分
+
+	6.juliam  INTEGER                   返回值，事件相对分钟数
+#### 算例
+	itf=juliam(0,5,12,14,26)
+	print *,itf
+	输出：190946
+------
 
 ### IsfitH_tomoDD_Isqr.f
 
