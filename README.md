@@ -1,7 +1,11 @@
 # Our tomoDD
 ## 简介
+<<<<<<< HEAD
 -------
   本程序大部分将使用**Fortran90**、**C**以及**Matlab**编写。
+=======
+  本程序大部分将使用**Fortran90**编写。
+>>>>>>> dd3202d44b2be13dec041989a05e4f9e50d9ea92
 ## tomoDD@H,J Zhang 文件说明
 ------
 ### aprod.f
