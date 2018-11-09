@@ -1,7 +1,7 @@
 # Our tomoDD
 ## 简介
 -------
-  本程序大部分将使用**Fortran90**编写。
+  本程序大部分将使用**Fortran90**、**C**以及**Matlab**编写。
 ## tomoDD@H,J Zhang 文件说明
 ------
 ### aprod.f
@@ -41,7 +41,22 @@
 ### datetime_.c
 
 ### datum.f
-
+#### 版本 Zhang版本
+#### 类型 subroutine datum(itf, iyr, imo, idy, ihr, imn)
+#### 程序说明
+本子函数用于输入相对事件参考年的分钟数转化为绝对日期，事件参考年由输入参数决定。
+#### 变量说明
+	变量名  变量类型                         变量说明
+	1.itf     INTEGER                   输入参量，事件相对分钟数
+	2.iyr     INTEGER                   输入参量，事件参考年  
+	3.imo     INTEGER                   输出参量，事件绝对年
+	4.idy     INTEGER                   输出参量，事件绝对月
+	5.ihr     INTEGER                   输出参量，事件绝对时
+	6.imn     INTEGER                   输出参量，事件绝对分
+#### 算例
+	call datum(190946,2008,0,0,0,0)
+	输出：190946 0 5 12 14 26
+------
 ### delaz.f
 
 ### delaz2.f
