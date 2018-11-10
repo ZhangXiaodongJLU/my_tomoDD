@@ -158,6 +158,181 @@
 	ii=1
 	
 	c-- Loop to read each parameter lines, skipping comments
+	210 read (fu_inp,'(a)',end=220)line
+	if (line(1:1).eq.'*' .or.line(2:2).eq.'*') goto 210
+	if (l.eq.1) read (line,'(a)',err=999) fn_cc
+	if (l.eq.2) read (line,'(a)',err=999) fn_ct
+	if (l.eq.3) read (line,'(a)',err=999) fn_eve
+	if (l.eq.4) read (line,'(a)',err=999) fn_sta
+	if (l.eq.5) read (line,'(a)',err=999) fn_loc
+	if (l.eq.6) read (line,'(a)',err=999) fn_reloc
+	if (l.eq.7) read (line,'(a)',err=999) fn_stares
+	if (l.eq.8) read (line,'(a)',err=999) fn_res
+	if (l.eq.9) read (line,'(a)',err=999) fn_srcpar
+	if (l.eq.10) read (line,'(a)',err=999) fn_vel
+	if (l.eq.11) read (line,'(a)',err=999) fn_abs
+	if (l.eq.12) read (line,*,err=999) idata, iphase, maxdist
+	if (l.eq.13) read (line,*,err=999) minobs_cc,minobs_ct,CC_format
+	if (l.eq.14) then
+	    read (line,*,err=999) istart, isolv, niter,
+      &	weight1, weight2, weight3, air_dep
+        end if
+	if (l.eq.15) then ! parameters for pesudo-bending ray tracing
+		 read (line,*,err=999) i3d, delt1, nidp, iskip, scale1,
+      &	       scale2, iusep, iuses, iuseq
+        end if
+	if (l.eq.16) then
+		 read (line,*,err=999) invdel, ifixl, xfac, tlim,
+      &	       nitpb(1), nitpb(2), stepl
+        end if
+	if (l.eq.17) then 
+	     read (line,*,err=999) lat_Orig, lon_Orig, dep_Orig, iorig, rota
+        end if
+
+       
+
+	c--Read iteration instructions
+      	if (l.ge.18 .and. l.le.17+niter) then
+         i=l-17
+         read (line,*,err=999) aiter(i),
+      & awt_ccp(i), awt_ccs(i), amaxres_cross(i), amaxdcc(i),
+      & awt_ctp(i), awt_cts(i), amaxres_net(i), amaxdct(i), awt_ctd(i),
+      & adamp(i),ajoint(i),threshold(i)
+        endif
+
+	c--Read specific clusters/events to relocate
+      	if (l.eq.18+niter) read (line,*,err=999) iclust
+      	if (l.ge.19+niter) then
+         read (line,*,err=999,end=230) (icusp(i),i=ii,ii+7)
+	230      ii= i
+      	endif
+      	l= l+1
+        goto 210
+	220   close (fu_inp)
+        ncusp= ii-1
+
+	c- rearrange aiter:
+        do i=2,niter
+          aiter(i)= aiter(i-1)+aiter(i)
+        enddo
+
+	c- check files
+        call exist (fn_eve)
+        call exist (fn_sta)
+        call exist (fn_abs)
+
+      	if ((idata.eq.1 .or.idata.eq.3).and.trimlen(fn_cc).gt.1)
+      &  call exist(fn_cc)
+        if ((idata.eq.2 .or.idata.eq.3).and.trimlen(fn_ct).gt.1)
+      &  call exist (fn_ct)
+
+        maxiter= aiter(niter)
+	c synthetic noise:
+        noisef_dt= 0.002
+
+	c write log output: of newest format
+	600   if (trimlen(fn_loc).lt.2) fn_loc= 'tomoDD.loc'
+        if (trimlen(fn_reloc).lt.2) fn_reloc= 'tomoDD.reloc'
+        write (6,'("INPUT FILES:",/,
+       &"cross dtime data: ",a,/,"catalog dtime data: ",a,/,
+       &"events: ",a,/,"stations: ",a,/,"OUTPUT FILES:",/,
+       &"initial locations: ",a,/,"relocated events: ",a,/,
+       &"event pair residuals: ",a,/,"station residuals: ",a,/,
+       &"source parameters: ",a)')
+       &fn_cc(1:trimlen(fn_cc)),
+       &fn_ct(1:trimlen(fn_ct)),
+       &fn_eve(1:trimlen(fn_eve)),
+       &fn_sta(1:trimlen(fn_sta)),fn_loc(1:trimlen(fn_loc)),
+       &fn_reloc(1:trimlen(fn_reloc)),fn_res(1:trimlen(fn_res)),
+       &fn_stares(1:trimlen(fn_stares)),fn_srcpar(1:trimlen(fn_srcpar))
+
+        write (log,'("Input parameters: (from ",a,")",/,
+       &"  cross dtime file: ",a,/,"  catalog dtime file: ",a,/,
+       &"  station file: ",a,/,"  event file: ",a,/,
+       &"  initial locations: ",a,/,"  relocated events: ",a)')
+       &fn_inp(1:trimlen(fn_inp)),
+       &fn_cc(1:trimlen(fn_cc)),
+       &fn_ct(1:trimlen(fn_ct)),
+       &fn_sta(1:trimlen(fn_sta)),
+       &fn_eve(1:trimlen(fn_eve)),fn_loc(1:trimlen(fn_loc)),
+       &fn_reloc(1:trimlen(fn_reloc))
+
+        write (log,'(
+       &"  event pair file: ",a,/,"  station residual file: ",a,/,
+       &"  source parameter file: ",a,/,
+       &"  IDATA= ",i2,2X,"IPHASE= ",i2,2x,"MAXDIST= ",f5.0,/,
+       &"  MINOBS_CC= ",i3,2x,"MINOBS_CT= ",i3,/,"  ISTART= ",i1,2x,
+       &"ISOLV= ",i1,2x)')
+       &fn_res(1:trimlen(fn_res)),
+       &fn_stares(1:trimlen(fn_stares)),fn_srcpar(1:trimlen(fn_srcpar)),
+       &idata,iphase,maxdist,minobs_cc,minobs_ct,istart,isolv
+
+        aiter(0)=0
+        write (log, '("  ITER ",i2,"-",i2,
+       &": DAMP= "f5.1,/,"    WT_CCP= ",f7.4,2X,"WT_CCS= ",f7.4,2x,
+       &"MAXR_CC= ",f7.4,2X,"MAXD_CC= ",f7.2,2X,/,
+       &"    WT_CTP= ",f7.4,2x,"WT_CTS= ",f7.4,2x,"MAXR_CT= ",f7.4,2x,
+       &"MAXD_CT= ",f7.2, 2x, "JOINT= ", i3)')
+       &(aiter(i-1)+1,aiter(i),adamp(i),awt_ccp(i),awt_ccs(i),
+       & amaxres_cross(i),
+       & amaxdcc(i),awt_ctp(i),awt_cts(i), amaxres_net(i), amaxdct(i),
+       & ajoint(i),
+       & i=1,niter)
+
+	c--- write the pseudo-bending parameters
+      	write(log,*)'i3d=',i3d
+      	write(log,*)'delt1=',delt1
+      	write(log,*)'ndip=',ndip
+      	write(log,*)'iskip=',iskip
+      	write(log,*)'scale1=',scale1
+      	write(log,*)'scale2=',scale2
+      	write(log,*)'iusep=',iusep
+      	write(log,*)'iuses=',iuses
+     	write(log,*)'iuseq=',iuseq
+	c--- smoothing constraint
+      	write(log,*)'Smoothing applied.....'
+      	write(log,*)'Weight1=',weight1
+      	write(log,*)'Weight2=',weight2
+      	write(log,*)'Weight3=',weight3
+	c--- CC data format
+      	if(CC_format.eq.1) then
+	  write(log,*)'hypoDD CC format is used'
+        elseif(CC_format.eq.2) then
+	  write(log,*)'Another CC format is used! It has the following format:'
+	  write(log,*)'EveID1 EveID2 Station Diff_time CC_coef CC_phase'
+        else
+	  write(log,*)'Neither of the format is chosen! Stop the program!'
+	  write(log,*)'CC_format must be 1 or 2!'
+	  stop
+        endif	
+
+	c--Repeat number of clusters, events to relocate
+      	if (iclust.eq.0) then
+          write (*,*) 'Relocate all clusters'
+          write (log,*) 'Relocate all clusters'
+        else
+          write (*,*) 'Relocate cluster number ',iclust
+          write (log,*) 'Relocate cluster number ',iclust
+        end if
+
+      	if (ncusp.eq.0) then
+          write (*,*) 'Relocate all events'
+          write (log,*) 'Relocate all events'
+        else
+          write (*,*) 'Relocate ',ncusp,' events'
+          write (log,*) 'Relocate ',ncusp,' events'
+        end if
+        return
+
+	c--Input error handling
+	998   write(*,*)'>>> ERROR OPENING CONTROL PARAMETER FILE'
+              goto 1000
+
+	999   write (*,*)'>>> ERROR READING CONTROL PARAMETERS IN LINE ',l
+              write (*,*) line
+	1000  stop 'Program run aborted.'
+      	      end  ! of subroutine getinp
+	
 ### hypot_.c
 
 ### ifindi.f
