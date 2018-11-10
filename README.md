@@ -148,8 +148,8 @@
 	character	line*80
 	integer		trimlen
 	
-	c--- newest format: 083000 with iteration step dependent weighting
-	c-- open input file:
+c--- newest format: 083000 with iteration step dependent weighting
+c-- open input file:
 	call freeunit(fu_inp)
 	open (fu_inp,status='unknown',file=fn_inp,err=998)
 	ncusp= 0
@@ -157,7 +157,7 @@
 	l=1
 	ii=1
 	
-	c-- Loop to read each parameter lines, skipping comments
+c-- Loop to read each parameter lines, skipping comments
 ### hypot_.c
 
 ### ifindi.f
