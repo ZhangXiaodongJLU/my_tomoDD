@@ -64,7 +64,56 @@
 ### getdata_tomoDD.f
 
 ### getinp_tomoDD.f
-
+	subroutine getinp_tomoDD (MAXEU,log,fn_inp,
+      & fn_cc, fn_ct, fn_sta, fn_eve, fn_vel, fn_abs,
+      & fn_loc, fn_reloc, fn_res, fn_stares, fn_srcpar,
+      & idata, iphase,
+      & minobs_cc, minobs_ct,
+      & amaxres_cross, amaxres_net, amaxdcc, amaxdct,
+      & noisef_dt, maxdist,
+      & awt_ccp, awt_ccs, awt_ctp, awt_cts, awt_ctd, adamp,
+      & istart, maxiter, isolv, niter, aiter, ajoint, threshold,
+      & iclust, ncusp, icusp,
+      & lat_Orig, lon_Orig, dep_Orig, iorig,
+      & rota, stepl, CC_format,
+      & weight1, weight2, weight3, air_dep)
+      	
+	implicit none
+	
+	include'ray_common,inc'
+	
+	Parameters:
+	integer		maxev		! Array dimension
+	integer		log		! Log-file indentifier
+	character	fn_inp*80	! File of control info.
+	character	fn_cc*80	! File of cross-corr. times
+	character	fn_ct*80	! File of catalog times
+	character	fn_sta*80	! Station file
+	character	fn_eve*80	! Event file
+	character	fn_loc*80	! Output file of original locs
+	character	fn_reloc*80	! Output file of final locs
+	character	fn_res*80	! Output residual file
+	character	fn_stares*80	! Output station file
+	character	fn_srcpar*80	! Output source-parameter file
+	character 	fn_abs*80	! Absolute travel time data file
+	character	fn_vel*80	! The velocity from each inversion
+	integer		idata		! 0:Synthetics
+					! 1:Cross-correlation
+					! 2:catalog
+					! 3:Both
+	integer		iphase		! 1: P; 2: S; 3: Both
+	integer		minobs_cc	! Min. obs./pair for ccor. data
+	integer		minbos_ct	! Min. obs./pair for cat. data
+	real		amaxres_cross(20)! [1..nither] Ccor. res. thresh.
+	real		amaxres_net(20)	! [1..nither] Cat. res. thresh.
+	real		amaxdcc(20)	! [1..nither] Ccor. link-dist. limit
+	real		amaxdct(20)	! [1..nither] Cat. link-dist. limit
+	real		noisef_dt	! Synthetic noise
+	real		maxdist		! Max. cluster-station distance
+	real		threshold(20)	! Determine the threshold
+	real 		awt_ctd(20)	! relative weighting between abs and diff cat
+	real		awt_ccp(20)	! [1..niter] Wts. for ccor. P
+	real		awt_ccs(20)	
 ### hypot_.c
 
 ### ifindi.f
