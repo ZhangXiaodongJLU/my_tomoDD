@@ -7,7 +7,7 @@
 #### 版本 hypoDD,Zhang修改
 #### 类型 subroutine aprod(mode, m, n, x, y, leniw, lenrw, iw, rw)
 #### 程序说明
-本子函数用于计算矩阵a与列向量x、y的乘积，据称用于**LSQR**算法。
+本子函数用于计算矩阵a与列向量x、y的乘积，主要使用**LSQR**和**SVD**算法。
 #### 变量说明
 	变量名  变量类型                         变量说明
 	1.mode  INTEGER                   选择计算模式
@@ -113,7 +113,51 @@
 	real		threshold(20)	! Determine the threshold
 	real 		awt_ctd(20)	! relative weighting between abs and diff cat
 	real		awt_ccp(20)	! [1..niter] Wts. for ccor. P
-	real		awt_ccs(20)	
+	real		awt_ccs(20)	! [1..niter] Wts. for ccor. S
+	real		awt_ctp(20)	! [1..niter] Wts. for cat. P
+	real		awt_ctp(20)	! [1..niter] Wts. for cat. S
+	real		adamp(20)	! [1..niter] Damping (lsqr only)
+	integer		adjoint(20)	! Joint inversion or not
+	integer		istart		! 1:From single source
+					! 2:From network sources
+	integer		maxiter		
+	integer 	isolv		! 1:SVD; 2: LSQR
+	integer		niter		! No. of iteration sets
+	integer		aiter(0:20)	! [1..niter] Iterations/set
+	integer		icluster	! Cluster to relocate (0:all)
+	integer		ncusp		! No. of event keys in icusp[]
+	integer		icusp(maxev)	! [1..niter] Events to relocate
+	real 		stepl
+	real		lat_Orig
+	real		lon_Orig
+	real		dep_Orig			
+	real		rota
+	integer		iorig
+	integer		CC_format	! CC data format:1 for hypoDD,2 for simple fmt
+	real		weight1
+	real		weight2
+	real		weight3
+	real		air_dep
+	
+	
+ 	c		Local varibles
+	integer		fu_inp
+	integer		i
+	integer		ii
+	integer		l
+	character	line*80
+	integer		trimlen
+	
+	c--- newest format: 083000 with iteration step dependent weighting
+	c-- open input file:
+	call freeunit(fu_inp)
+	open (fu_inp,status='unknown',file=fn_inp,err=998)
+	ncusp= 0
+	niter= 0  ! number of iteration blocks
+	l=1
+	ii=1
+	
+	
 ### hypot_.c
 
 ### ifindi.f
