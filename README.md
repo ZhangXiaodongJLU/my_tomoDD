@@ -157,7 +157,7 @@
 	l=1
 	ii=1
 	
-	
+	c-- Loop to read each parameter lines, skipping comments
 ### hypot_.c
 
 ### ifindi.f
