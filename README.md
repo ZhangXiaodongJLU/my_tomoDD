@@ -1,7 +1,7 @@
 # Our tomoDD
 ## 简介
 -------
-  本程序大部分将使用**Fortran90**、**C**以及**Matlab**编写。
+本程序大部分将使用**Fortran90**、**C**以及**Matlab**编写。
 =======
 ## tomoDD@H,J Zhang 文件说明
 ------
