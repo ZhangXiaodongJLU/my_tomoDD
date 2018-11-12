@@ -27,7 +27,7 @@
 ------
 ### atoangle.c
 
-### atoangle.c
+### atoangle_.c
 
 ### chtof.c
 
@@ -53,8 +53,13 @@
 
 ### exist.f
 
-### f77types.h
-
+### f77types.h 头文件
+此函数用于F77编译器读取C语言数据类型时的一些作用函数
+#### 函数说明
+	  函数名		函数作用
+	  F77INT	  默认整数数据类型
+	  F77LOG	  默认逻辑型数据类型
+	  F77SLA	  长字符串参数类型
 ### freeunit.f
 
 ### geocoord.inc
